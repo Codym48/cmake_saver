@@ -19,3 +19,6 @@ For lists where order doesn't matter, vertical lists of individual entries that 
 
 # Use Cases
 - Developer(s) edit the CMake list files within a directory tree in a way that may have introduced a mix of tabs and spaces. While reviewing the files, a developer wishes to know whether the observed inconsistent indentation is intentional or just an artifact of differing underlying whitespace characters and display settings. The developer runs cmake_saver on all of the CMake list files in a local copy of the directory tree to standardize on either tabs or spaces throughout by changing files in place. At this point, the developer can adjust indentation to achieve the desired look with confidence that the relative indentation will show up correctly in all code file viewers.
+
+# Requirements
+1. cmake_saver, when executed with no arguments, shall print a help string and return a non-zero error code.
