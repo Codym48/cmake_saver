@@ -1,0 +1,16 @@
+[style]
+based_on_style = pep8
+
+# Something 'reasonable'. PEP8 suggests 79, which is too silly, or 99 as a
+# compromise, but even that is a little silly on modern displays. 119 seems
+# to provide a good balance of fitting well in diff tools while not leaving
+# a bunch of empty space on the right side, and code that isn't a bunch of
+# chunks on their own lines.
+column_limit = 119
+
+# These make the pep8 style more pep8 compliant. Not sure why yapf defaults these the
+# way it does for pep8.
+spaces_around_default_or_named_assign = true
+split_before_arithmetic_operator = true
+space_between_ending_comma_and_closing_bracket = false
+#indent_closing_brackets = true # Enable when we have yapf >= 0.29.
