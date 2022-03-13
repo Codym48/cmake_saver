@@ -1,0 +1,123 @@
+stages:
+  - lint
+  - test
+
+default:
+  # Official language image. Look for the different tagged releases at:
+  # https://hub.docker.com/r/library/python/tags/
+  image: python:latest
+  before_script:
+    - python --version
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+
+.setup_windows_environment:
+  before_script:
+    # https://gitlab.com/gitlab-org/ci-cd/shared-runners/images/gcp/windows-containers/-/issues/13
+    - Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+    - choco install python3 --version=$PYTHON_VERSION --yes --force --no-progress
+    - refreshenv
+  tags:
+    - shared-windows
+    - windows
+    - windows-1809
+
+.pytest:
+  script:
+    - pip install pytest pytest-cov
+    - coverage run --omit 'venv/*' -m pytest --junitxml=report.xml
+    - coverage report
+    - coverage xml
+  stage: test
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      cobertura: coverage.xml
+
+flake8:
+  script:
+    - pip install flake8
+    - flake8 . --count --show-source --statistics --exclude=".git,__pycache__,venv"
+  stage: lint
+
+yapf:
+  script:
+    - pip install yapf
+    - yapf . -d -r --exclude=venv
+  stage: lint
+
+linux-pytest-latest:
+  extends: .pytest
+
+linux-pytest-2.7:
+  extends: .pytest
+  image: python:2.7
+
+linux-pytest-3.5:
+  extends: .pytest
+  image: python:3.5
+
+linux-pytest-3.6:
+  extends: .pytest
+  image: python:3.6
+
+linux-pytest-3.7:
+  extends: .pytest
+  image: python:3.7
+
+linux-pytest-3.8:
+  extends: .pytest
+  image: python:3.8
+
+linux-pytest-3.9:
+  extends: .pytest
+  image: python:3.9
+
+linux-pytest-3.10:
+  extends: .pytest
+  image: python:3.10
+
+windows-pytest-3.5:
+  extends:
+    - .setup_windows_environment
+    - .pytest
+  variables:
+    PYTHON_VERSION: "3.5.4"
+
+windows-pytest-3.6:
+  extends:
+    - .setup_windows_environment
+    - .pytest
+  variables:
+    PYTHON_VERSION: "3.6.8"
+
+windows-pytest-3.7:
+  extends:
+    - .setup_windows_environment
+    - .pytest
+  variables:
+    PYTHON_VERSION: "3.7"
+
+windows-pytest-3.8:
+  extends:
+    - .setup_windows_environment
+    - .pytest
+  variables:
+    PYTHON_VERSION: "3.8"
+
+windows-pytest-3.9:
+  extends:
+    - .setup_windows_environment
+    - .pytest
+  variables:
+    PYTHON_VERSION: "3.9"
+
+windows-pytest-3.10:
+  extends:
+    - .setup_windows_environment
+    - .pytest
+  variables:
+    PYTHON_VERSION: "3.10"
