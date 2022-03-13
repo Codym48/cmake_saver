@@ -29,10 +29,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install flake8 yapf pytest
-    - name: Lint with flake8, Check format with yapf
-      run: |
-        yapf -d -r ./
-        flake8 . --count --max-line-length=127 --show-source --statistics
+    - name: Format with yapf
+      run: yapf -d -r .
+    - name: Lint with flake8
+      run: flake8 . --count --max-line-length=127 --show-source --statistics
     - name: Test with pytest
-      run: |
-        pytest
+      run: pytest
