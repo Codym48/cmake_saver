@@ -6,10 +6,10 @@ import sys
 EXCLUDE_DIRS = [".git", ".svn", ".pytest_cache", "__pycache__"]
 
 
-def iter_cmake_files(toplevel):
+def iter_cmake_files(directory, recursive = False):
     """Generate an iterable of CMake files on which to operate."""
-    for dirpath, dirnames, filenames in os.walk(os.path.normpath(toplevel)):
-        dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
+    for dirpath, dirnames, filenames in os.walk(os.path.normpath(directory)):
+        dirnames[:] = [d for d in dirnames if (recursive and d not in EXCLUDE_DIRS)]
         for filename in filenames:
             if "CMakeLists.txt" == filename or filename.endswith(".cmake"):
                 yield os.path.normpath(os.path.join(dirpath, filename))
@@ -33,13 +33,19 @@ def parse_args(args):
         default = os.path.curdir,
         help = "Directory to search for CMake list files",
         )
+    parser.add_argument(
+        "-r",
+        "--recursive",
+        action = "store_true",
+        help = "Recurse into all subdirectories of input directory",
+        )
     return parser.parse_args(args)
 
 
 def main(args):
     """Fix all CMake list files in place in current directory."""
     input = parse_args(args)
-    for filename in iter_cmake_files(input.directory):
+    for filename in iter_cmake_files(input.directory, input.recursive):
         inspect_cmake_file(filename)
     return 0
 

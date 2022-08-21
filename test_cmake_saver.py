@@ -13,15 +13,15 @@ CMAKE_FILES = [
 
 TRAILING_WHITESPACE_RE = re.compile("[ \t]+$", re.MULTILINE)
 
-FNULL = open(os.devnull, 'w')
+FNULL = open(os.devnull, "w")
 
 
 class TestFunctionsThatModifyFiles(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         """Copy cmake_saver.py into a subdirectory to prove we can call it there."""
-        os.makedirs('tmp/sub/dir')
-        shutil.copy('cmake_saver.py', 'tmp/sub/dir/cmake_saver.py')
+        os.makedirs("tmp/sub/dir")
+        shutil.copy("cmake_saver.py", "tmp/sub/dir/cmake_saver.py")
 
     def setUp(self):
         """Save the original text of all CMake list files to restore later."""
@@ -39,7 +39,7 @@ class TestFunctionsThatModifyFiles(unittest.TestCase):
     @classmethod
     def tearDownClass(self):
         """Remove the temporary copy of cmake_saver.py"""
-        shutil.rmtree('tmp')
+        shutil.rmtree("tmp")
 
     def assert_fixed(self, files):
         """Assert that all input files have been inspected and fixed."""
@@ -62,31 +62,39 @@ class TestFunctionsThatModifyFiles(unittest.TestCase):
         self.assert_unchanged(CMAKE_FILES[1:])
 
     def test_main_default(self):
-        """Verify main fixes all CMake files recursively from the current working directory."""
+        """Verify main doesn't do anything since there are no CMake list files in the current working directory."""
         self.assertEqual(cmake_saver.main([]), 0)
+        self.assert_unchanged(CMAKE_FILES)
+
+    def test_main_recursive(self):
+        """Verify main fixes all CMake files recursively from the current working directory."""
+        self.assertEqual(cmake_saver.main(["-r"]), 0)
         self.assert_fixed(CMAKE_FILES)
 
     def test_main_input_subdirectory(self):
         """Verify main fixes all CMake files within the input subdirectory."""
-        self.assertEqual(cmake_saver.main(['-d', 'example_project/dir2']), 0)
+        self.assertEqual(cmake_saver.main(["-d", "example_project/dir2"]), 0)
         self.assert_fixed([CMAKE_FILES[-1]])
         self.assert_unchanged(CMAKE_FILES[:-1])
 
-    def test_call_file_from_superdirectory(self):
-        ret_code = subprocess.call('python tmp/sub/dir/cmake_saver.py', shell = True)
+    def test_call_file_from_superdirectory_recursive(self):
+        """Verify cmake_saver.py operates on the current directory even if it lives in a subdirectory."""
+        ret_code = subprocess.call("python tmp/sub/dir/cmake_saver.py -r", shell = True)
         self.assertEqual(ret_code, 0)
         self.assert_fixed(CMAKE_FILES)
 
     def test_call_file_from_superdirectory_input_subdirectory(self):
-        ret_code = subprocess.call('python tmp/sub/dir/cmake_saver.py -d example_project/dir1', shell = True)
+        """Verify cmake_saver.py operates on the input directory even if it lives in a different subdirectory."""
+        ret_code = subprocess.call("python tmp/sub/dir/cmake_saver.py -d example_project/dir1", shell = True)
         self.assertEqual(ret_code, 0)
         self.assert_fixed([CMAKE_FILES[1]])
         self.assert_unchanged(CMAKE_FILES[0::2])
 
     def test_call_file_from_different_current_directory(self):
-        os.chdir('example_project')
-        ret_code = subprocess.call('python ../tmp/sub/dir/cmake_saver.py -d dir2', shell = True)
-        os.chdir('..')
+        """Verify cmake_saver.py operates on the input directory relative to the current working directory."""
+        os.chdir("example_project")
+        ret_code = subprocess.call("python ../tmp/sub/dir/cmake_saver.py -d dir2", shell = True)
+        os.chdir("..")
         self.assertEqual(ret_code, 0)
         self.assert_fixed([CMAKE_FILES[-1]])
         self.assert_unchanged(CMAKE_FILES[:-1])
@@ -94,8 +102,13 @@ class TestFunctionsThatModifyFiles(unittest.TestCase):
 
 class TestFunctionsThatDontModifyFiles(unittest.TestCase):
     def test_iter_cmake_files(self):
-        """Verify this function finds all known CMake files."""
-        files = [f for f in cmake_saver.iter_cmake_files(os.path.curdir)]
+        """Verify this function finds no files when executed non-recursively."""
+        files = [f for f in cmake_saver.iter_cmake_files(os.path.curdir, False)]
+        self.assertEqual(files, [])
+
+    def test_iter_cmake_files_recursive(self):
+        """Verify this function finds all known CMake files when executed recursively."""
+        files = [f for f in cmake_saver.iter_cmake_files(os.path.curdir, True)]
         self.assertEqual(sorted(files), CMAKE_FILES)
 
     def test_parse_args_default_to_curdir(self):
@@ -105,19 +118,27 @@ class TestFunctionsThatDontModifyFiles(unittest.TestCase):
 
 class TestUserInterface(unittest.TestCase):
     def test_call_file_input_directory(self):
-        ret_code = subprocess.call('python cmake_saver.py -d doesnotexist', shell = True)
+        ret_code = subprocess.call("python cmake_saver.py -d doesnotexist", shell = True)
         self.assertEqual(ret_code, 0)
 
     def test_call_file_input_help(self):
-        ret_code = subprocess.call('python cmake_saver.py -h', stdout = FNULL, shell = True)
+        ret_code = subprocess.call("python cmake_saver.py -h", stdout = FNULL, shell = True)
+        self.assertEqual(ret_code, 0)
+
+    def test_call_file_input_recursive(self):
+        ret_code = subprocess.call("python cmake_saver.py -r -d doesnotexist", shell = True)
         self.assertEqual(ret_code, 0)
 
     def test_call_module_input_directory(self):
-        ret_code = subprocess.call('python -m cmake_saver -d doesnotexist', shell = True)
+        ret_code = subprocess.call("python -m cmake_saver -d doesnotexist", shell = True)
         self.assertEqual(ret_code, 0)
 
     def test_call_module_input_help(self):
-        ret_code = subprocess.call('python -m cmake_saver -h', stdout = FNULL, shell = True)
+        ret_code = subprocess.call("python -m cmake_saver -h", stdout = FNULL, shell = True)
+        self.assertEqual(ret_code, 0)
+
+    def test_call_module_input_recursive(self):
+        ret_code = subprocess.call("python -m cmake_saver -r -d doesnotexist", shell = True)
         self.assertEqual(ret_code, 0)
 
 

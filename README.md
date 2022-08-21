@@ -27,6 +27,7 @@ For lists where order doesn't matter, vertical lists of individual entries that 
 1. cmake_saver shall be executable as a python script via `python cmake_saver.py`
 2. cmake_saver shall be executable as a python module via `python -m cmake_saver`
 3. cmake_saver, when executed with the `-h` argument, shall print a usage string
-4. cmake_saver, when executed with the `-d` argument, shall traverse and recurse into input directory tree and remove all trailing whitespace characters (`[ \t]`) from all CMake list files (`CMakeLists.txt` and `*.cmake`)
+4. cmake_saver, when executed with the `-d` argument, shall remove all trailing whitespace characters (`[ \t]`) from all CMake list files (`CMakeLists.txt` and `*.cmake`) in the input directory
 5. cmake_saver, when executed with no arguments, shall behave like it was executed with `-d` pointing to the current working directory
-6. cmake_saver shall not recurse into version control or cache directories
+6. cmake_saver, when executed with the `-r` argument, shall recurse into and operate on all files in all* directories under the input directory
+7. *cmake_saver shall not recurse into version control or cache directories
