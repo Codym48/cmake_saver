@@ -65,7 +65,7 @@ steps:
     displayName: "Install dependencies"
 
   - script: |
-      pip install yapf
+      pip install yapf==0.31.0
       yapf -d -r .
     displayName: "Format with yapf"
 

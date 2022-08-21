@@ -1,0 +1,3 @@
+[flake8]
+# Prevent flake8 from fighting with our custom yapf config
+ignore = E123,E251,E501

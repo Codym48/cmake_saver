@@ -25,8 +25,8 @@ default:
 
 .pytest:
   script:
-    - pip install pytest pytest-cov
-    - coverage run --omit 'venv/*' -m pytest --junitxml=report.xml
+    - pip install coverage pytest
+    - coverage run --omit 'venv/*' -m pytest --junitxml=tests.xml
     - coverage report
     - coverage xml
   stage: test
@@ -34,7 +34,7 @@ default:
   artifacts:
     when: always
     reports:
-      junit: report.xml
+      junit: tests.xml
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
@@ -47,7 +47,7 @@ flake8:
 
 yapf:
   script:
-    - pip install yapf
+    - pip install yapf==0.31.0
     - yapf . -d -r --exclude=venv
   stage: lint
 

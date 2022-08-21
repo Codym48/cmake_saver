@@ -13,4 +13,4 @@ column_limit = 119
 spaces_around_default_or_named_assign = true
 split_before_arithmetic_operator = true
 space_between_ending_comma_and_closing_bracket = false
-#indent_closing_brackets = true # Enable when we have yapf >= 0.29.
+indent_closing_brackets = true

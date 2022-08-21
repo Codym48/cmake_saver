@@ -1,0 +1,10 @@
+[run]
+# Explicitly omit the temporary copy of cmake_saver.py from the coverage report.
+# Without this, `pytest --cov=.` generates a warning that fails the pipelines:
+#   CoverageWarning: Couldn't parse 'tmp\sub\dir\cmake_saver.py': No source for code: 'tmp\sub\dir\cmake_saver.py'. (couldnt-parse)
+#     coverage._warn(msg, slug="couldnt-parse")
+# It would be nice to measure coverage of this copy of cmake_saver.py,
+# to highlight functions exercised in the copy but not the original and vice versa,
+# but there doesn't seem to be a way to do that and still clean up the copy at the end of the tests.
+# Interestingly, `coverage run -m pytest` does _not_ emit the same warning.
+omit = tmp/sub/dir/*
