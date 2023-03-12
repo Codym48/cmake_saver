@@ -9,7 +9,7 @@ cmake_saver takes a different approach: automatically address the most common pa
 - **Remove trailing whitespace.**
 Trailing whitespace is visual noise for those with "Render whitespace" enabled and a waste of disk space for everyone.
 - _(Planned)_ **Apply tabs or spaces throughout.**
-There are good reasons for tabs, and good reasons for spaces. There's no good reason for mixing them within a file. Pick one and apply it throughout to avoid visual noise when editing, reading, or reviewing list files in different edtors.
+There are good reasons for tabs, and good reasons for spaces. There's no good reason for mixing them within a file. Pick one and apply it throughout to avoid visual noise when editing, reading, or reviewing list files in different editors.
 - (_Planned)_ **Alphabetize vertical lists.**
 For lists where order doesn't matter, vertical lists of individual entries that abide by a sorting rule are easiest to review and merge. All sorting rules are somewhat arbitrary, but sorting in alphabetical order is automatically enforceable.
 

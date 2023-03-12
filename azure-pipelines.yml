@@ -11,9 +11,6 @@ strategy:
     lin-Python27:
       image.name: "ubuntu-latest"
       python.version: "2.7"
-    lin-Python36:
-      image.name: "ubuntu-latest"
-      python.version: "3.6"
     lin-Python37:
       image.name: "ubuntu-latest"
       python.version: "3.7"
@@ -26,6 +23,9 @@ strategy:
     lin-Python310:
       image.name: "ubuntu-latest"
       python.version: "3.10"
+    lin-Python311:
+      image.name: "ubuntu-latest"
+      python.version: "3.11"
     mac-Python37:
       image.name: "macOS-latest"
       python.version: "3.7"
@@ -38,6 +38,9 @@ strategy:
     mac-Python310:
       image.name: "macOS-latest"
       python.version: "3.10"
+    mac-Python311:
+      image.name: "macOS-latest"
+      python.version: "3.11"
     win-Python37:
       image.name: "windows-latest"
       python.version: "3.7"
@@ -50,6 +53,9 @@ strategy:
     win-Python310:
       image.name: "windows-latest"
       python.version: "3.10"
+    win-Python311:
+      image.name: "windows-latest"
+      python.version: "3.11"
 
 pool:
   vmImage: $(image.name)
@@ -58,6 +64,7 @@ steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: "$(python.version)"
+      githubToken: "$(GitHub_Personal_Access_Token)"
     displayName: "Use Python $(python.version)"
 
   - script: |
@@ -76,7 +83,7 @@ steps:
 
   - script: |
       pip install pytest-azurepipelines pytest-cov
-      pytest --cov=. --cov-report=xml --test-run-title="$(Agent.JobName)"
+      pytest --cov=. --cov-branch --cov-report=xml --test-run-title="$(Agent.JobName)"
     displayName: "pytest"
 
   - script: coverage report

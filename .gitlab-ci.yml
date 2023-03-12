@@ -26,11 +26,12 @@ default:
 .pytest:
   script:
     - pip install coverage pytest
-    - coverage run --omit 'venv/*' -m pytest --junitxml=tests.xml
+    - coverage run --branch --omit 'venv/*' -m pytest --junitxml=tests.xml
     - coverage report
     - coverage xml
   stage: test
-  coverage: '/^TOTAL.+?(\d+\%)$/'
+  # https://docs.gitlab.com/ee/ci/testing/test_coverage_visualization.html#python-example
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     when: always
     reports:
@@ -82,6 +83,10 @@ linux-pytest-3.10:
   extends: .pytest
   image: python:3.10
 
+linux-pytest-3.11:
+  extends: .pytest
+  image: python:3.11
+
 windows-pytest-3.5:
   extends:
     - .setup_windows_environment
@@ -123,3 +128,10 @@ windows-pytest-3.10:
     - .pytest
   variables:
     PYTHON_VERSION: "3.10"
+
+windows-pytest-3.11:
+  extends:
+    - .setup_windows_environment
+    - .pytest
+  variables:
+    PYTHON_VERSION: "3.11"
